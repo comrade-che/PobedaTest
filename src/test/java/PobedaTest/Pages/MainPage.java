@@ -1,5 +1,6 @@
 package PobedaTest.Pages;
 
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -12,7 +13,11 @@ public class MainPage extends BasePage {
     private WebElement pageTitle;
 
    @FindBy(how = How.CSS, using = "img[src=\"/_next/static/media/logo-rus-white.b9d69d0a.svg\"]")
-    private WebElement logo;
+    private static WebElement logo;
+
+    // Вкладка "Управление бронированием"
+    @FindBy(xpath = "//div[contains(text(), 'Управление бронированием')]")
+    private WebElement manageBookingTab;
 
     public MainPage(WebDriver driver) {
         super(driver);
@@ -23,15 +28,19 @@ public class MainPage extends BasePage {
         return ticketSearchBlock;
     }
 
-    public String getPageTitleText() {
+    public static String getPageTitleText() {
         return driver.getTitle();
     }
 
-    public boolean isLogoDisplayed() {
+    public static boolean isLogoDisplayed() {
         return logo.isEnabled();
     }
 
+    public void clickManageBooking() {
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", manageBookingTab);
+        manageBookingTab.click();
+    }
 
-
-
+    public void open() {
+    }
 }

@@ -1,6 +1,6 @@
 package PobedaTest.Pages;
 
-import Pobeda.Task1Pop_upWindows.Pages.BasePage;
+import PobedaTest.Pages.BasePage;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
