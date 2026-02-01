@@ -44,7 +44,7 @@ public class PobedaBookingManagement extends BasePage {
         MainPage homePage = new MainPage(driver);
         ManageBookingSection bookingSection = new ManageBookingSection(driver);
 
-        homePage.clickManageBooking();
+        MainPage.clickManageBooking();
 
         Assertions.assertTrue(bookingSection.isOrderNumberFieldVisible());
         Assertions.assertTrue(bookingSection.isLastNameFieldVisible());
@@ -53,17 +53,17 @@ public class PobedaBookingManagement extends BasePage {
 
     @Test
     public void testInvalidBookingSearchError() {
-        MainPage homePage = new MainPage(driver);
+        MainPage MainPage = new MainPage(driver);
         ManageBookingSection bookingSection = new ManageBookingSection(driver);
         BookingResultPage resultPage = new BookingResultPage(driver);
 
-        homePage.clickManageBooking();
+        MainPage.clickManageBooking();
         bookingSection.searchForTicket("XXXXXX", "Qwerty");
 
         // Переключение вкладки (если логика сайта открывает новую)
-        resultPage.switchToNewTab();
+        BookingResultPage.switchToNewTab();
 
         String expectedError = "Заказ с указанными параметрами не найден";
-        Assertions.assertEquals(expectedError, resultPage.getErrorText());
+        Assertions.assertEquals(expectedError, BookingResultPage.getErrorText());
     }
 }

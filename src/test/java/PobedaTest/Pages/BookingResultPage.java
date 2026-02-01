@@ -12,17 +12,17 @@ import java.util.Set;
 
 // POM Файл 4
 public class BookingResultPage {
-    private WebDriver driver;
+    private static WebDriver driver;
 
     @FindBy(xpath = "//div[contains(text(), 'Заказ с указанными параметрами не найден')]")
-    private WebElement errorMessageText;
+    private static WebElement errorMessageText;
 
     public BookingResultPage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
     }
 
-    public void switchToNewTab() {
+    public static void switchToNewTab() {
         String originalWindow = driver.getWindowHandle();
         Set<String> allWindows = driver.getWindowHandles();
         for (String windowHandle : allWindows) {
@@ -33,7 +33,7 @@ public class BookingResultPage {
         }
     }
 
-    public String getErrorText() {
+    public static String getErrorText() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.visibilityOf(errorMessageText));
         return errorMessageText.getText();
