@@ -1,69 +1,90 @@
 package PobedaTest.Tests;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import PobedaTest.Pages.BasePage;
-import PobedaTest.Pages.BookingResultPage;
-import PobedaTest.Pages.ManageBookingSection;
 import PobedaTest.Pages.MainPage;
+import PobedaTest.Pages.TicketSearchBlock;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import java.time.Duration;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-// Тестовый Файл 5
-public class PobedaBookingManagement extends BasePage {
+/**
+ ***Задание №3. Page Object. Инициирование поиска***
+ */
 
-    public PobedaBookingManagement(WebDriver driver) {
-        super(driver);
+public class PobedaBookingManagement {
+    private WebDriver driver;
+    private MainPage mainPage;
+    private CommonUtils utils;
+
+    public static class CommonUtils {
+        private WebDriver driver;
+        private Actions actions;
+
+        public CommonUtils(WebDriver driver) {
+            this.driver = driver;
+            this.actions = new Actions(driver);
+        }
+
+        public void hover(WebElement element) {
+            actions.moveToElement(element).perform();  // perform() здесь обязателен!
+        }
     }
 
-    // Шаг 1: Before метод (открывает сайт перед каждым тестом)
-    @BeforeEach
-    public void setUpPage() {
-        new MainPage(driver).open();
+    @BeforeMethod
+    public void setUp() {
+        // Автоматически скачает и настроит chromedriver
+        WebDriverManager.chromedriver().setup();
+
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        driver.get("https://pobeda.aero");
+
+        mainPage = new MainPage(driver);
+        utils = new CommonUtils(driver);
     }
 
-    // Шаг After: Формально требуется заданием, используем для логирования или очистки
-    @AfterEach
-    public void tearDownPage() {
-        System.out.println("Тест завершен.");
-    }
-
-    @org.testng.annotations.Test
+    @Test
     public void testPageTitleAndLogo() {
         String expectedTitle = "Авиакомпания «Победа» - купить авиабилеты онлайн, дешёвые билеты на самолёт, прямые и трансферные рейсы с пересадками";
-        assertEquals(MainPage.getPageTitleText(), expectedTitle);
-        assertTrue(MainPage.isLogoDisplayed());
+        assertEquals(mainPage.getPageTitleText(), expectedTitle);
+        assertTrue(mainPage.isLogoDisplayed());
     }
 
     @Test
-    public void testManageBookingFormFields() {
-        MainPage homePage = new MainPage(driver);
-        ManageBookingSection bookingSection = new ManageBookingSection(driver);
-
-        MainPage.clickManageBooking();
-
-        Assertions.assertTrue(bookingSection.isOrderNumberFieldVisible());
-        Assertions.assertTrue(bookingSection.isLastNameFieldVisible());
-        Assertions.assertTrue(bookingSection.isSearchButtonVisible());
+    public void testTicketSearchBlockDisplayed() {
+        assertTrue(TicketSearchBlock.isTicketSearchBlockDisplayed());
+        assertTrue(TicketSearchBlock.isFieldFromDisplayed());
+        assertTrue(TicketSearchBlock.isFieldWhereDisplayed());
+        assertTrue(TicketSearchBlock.isFieldThereDisplayed());
+        assertTrue(TicketSearchBlock.isFieldBackDisplayed());
     }
 
     @Test
-    public void testInvalidBookingSearchError() {
-        MainPage MainPage = new MainPage(driver);
-        ManageBookingSection bookingSection = new ManageBookingSection(driver);
-        BookingResultPage resultPage = new BookingResultPage(driver);
+    public void testTicketSearchInput() {
+        String cityFrom = "Москва";
+        String cityTo = "Санкт-Петербург";
+        TicketSearchBlock.enterRoute(cityFrom, cityTo);
+        TicketSearchBlock.clickSearchButton();
 
-        MainPage.clickManageBooking();
-        bookingSection.searchForTicket("XXXXXX", "Qwerty");
+        TicketSearchBlock.checkFromFieldErrorStyle();
 
-        // Переключение вкладки (если логика сайта открывает новую)
-        BookingResultPage.switchToNewTab();
+    }
 
-        String expectedError = "Заказ с указанными параметрами не найден";
-        Assertions.assertEquals(expectedError, BookingResultPage.getErrorText());
+    @AfterMethod
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
     }
 }

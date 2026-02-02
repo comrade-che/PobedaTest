@@ -26,7 +26,7 @@ public class PobedaInitiatingSearch {
     private MainPage mainPage;
     private CommonUtils utils;
 
-    public class CommonUtils {
+    public static class CommonUtils {
         private WebDriver driver;
         private Actions actions;
 

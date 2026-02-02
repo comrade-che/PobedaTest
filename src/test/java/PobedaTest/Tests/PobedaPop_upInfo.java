@@ -22,7 +22,7 @@ public class PobedaPop_upInfo {
     private CommonUtils utils;
     private InfoMenu infoMenu;
 
-    public class CommonUtils {
+    public static class CommonUtils {
         private WebDriver driver;
         private Actions actions;
 
