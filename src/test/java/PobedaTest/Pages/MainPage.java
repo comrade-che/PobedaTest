@@ -16,8 +16,8 @@ public class MainPage extends BasePage {
     private static WebElement logo;
 
     // Вкладка "Управление бронированием"
-    @FindBy(xpath = "//div[contains(text(), 'Управление бронированием')]")
-    private static WebElement manageBookingTab;
+    @FindBy(xpath = "(//*[@id=\"__next\"]/div[2]/main/div/div[2]/div/div[1]/div/div/button[3]/span[2])")
+    private static WebElement bookingManagementButton;
 
     public MainPage(WebDriver driver) {
         super(driver);
@@ -36,9 +36,12 @@ public class MainPage extends BasePage {
         return logo.isEnabled();
     }
 
-    public static void clickManageBooking() {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", manageBookingTab);
-        manageBookingTab.click();
+    // Скролл и клик по управлению бронированием
+    public void openBookingManagement() {
+        // Скроллим страницу чуть ниже (как в задании)
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", bookingManagementButton);
+        waitVisibility(bookingManagementButton);
+        bookingManagementButton.click();
     }
 
     public void open() {

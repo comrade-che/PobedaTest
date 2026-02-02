@@ -1,6 +1,8 @@
 package PobedaTest.Tests;
 
+import PobedaTest.Pages.BookingManagementPage;
 import PobedaTest.Pages.MainPage;
+import PobedaTest.Pages.SearchResultsPage;
 import PobedaTest.Pages.TicketSearchBlock;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
@@ -18,13 +20,15 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 /**
- ***Задание №3. Page Object. Инициирование поиска***
+ ***Задание №3. Page Object. Результаты поиска***
  */
 
 public class PobedaBookingManagement {
     private WebDriver driver;
     private MainPage mainPage;
     private CommonUtils utils;
+    private BookingManagementPage bookingPage;
+    private SearchResultsPage resultsPage;
 
     public static class CommonUtils {
         private WebDriver driver;
@@ -42,7 +46,6 @@ public class PobedaBookingManagement {
 
     @BeforeMethod
     public void setUp() {
-        // Автоматически скачает и настроит chromedriver
         WebDriverManager.chromedriver().setup();
 
         driver = new ChromeDriver();
@@ -52,6 +55,8 @@ public class PobedaBookingManagement {
 
         mainPage = new MainPage(driver);
         utils = new CommonUtils(driver);
+        bookingPage = new BookingManagementPage(driver);
+        resultsPage = new SearchResultsPage(driver);
     }
 
     @Test
@@ -62,23 +67,25 @@ public class PobedaBookingManagement {
     }
 
     @Test
-    public void testTicketSearchBlockDisplayed() {
-        assertTrue(TicketSearchBlock.isTicketSearchBlockDisplayed());
-        assertTrue(TicketSearchBlock.isFieldFromDisplayed());
-        assertTrue(TicketSearchBlock.isFieldWhereDisplayed());
-        assertTrue(TicketSearchBlock.isFieldThereDisplayed());
-        assertTrue(TicketSearchBlock.isFieldBackDisplayed());
+    public void testBookingNavigationAndForm() {
+        // Шаг 3: Скролл и клик
+        mainPage.openBookingManagement();
+
+        Assert.assertTrue(bookingPage.isOrderNumberInputDisplayed(), "Поле 'Номер заказа' отсутствует");
+        Assert.assertTrue(bookingPage.isLastNameInputDisplayed(), "Поле 'Фамилия' отсутствует");
+        Assert.assertTrue(bookingPage.isSearchButtonDisplayed(), "Кнопка 'Поиск' отсутствует");
     }
 
     @Test
-    public void testTicketSearchInput() {
-        String cityFrom = "Москва";
-        String cityTo = "Санкт-Петербург";
-        TicketSearchBlock.enterRoute(cityFrom, cityTo);
-        TicketSearchBlock.clickSearchButton();
+    public void testNegativeTicketSearch() {
+        mainPage.openBookingManagement();
 
-        TicketSearchBlock.checkFromFieldErrorStyle();
+        bookingPage.searchForTicket("XXXXXX", "Qwerty");
 
+        String expectedError = "Заказ с указанными параметрами не найден";
+        String actualError = resultsPage.getErrorMessageText();
+
+        Assert.assertEquals("Заказ с указанными параметрами не найден", expectedError, actualError);
     }
 
     @AfterMethod
